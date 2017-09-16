@@ -11,8 +11,7 @@ local function wifi_wait_ip()
     print("MAC address is: " .. wifi.ap.getmac())
     print("IP is "..wifi.sta.getip())
     print("====================================")
-      tmr.unregister(2)
-    app.start()
+    server.start()
   end
 end
 
@@ -20,18 +19,9 @@ local function wifi_start(list_aps)
     if list_aps then
         for key,value in pairs(list_aps) do
             if config.SSID and config.SSID[key] then
-                wifi.setmode(wifi.STATIONAP)
+                wifi.setmode(wifi.STATION);
+                wifi.sta.setip({ip=config.IP,netmask=config.NETMASK,gateway=config.GATEWAY})
                 wifi.sta.config(key,config.SSID[key])
-                local cfg={}
-     print("configuring as station") 
-     cfg.ssid="test";
-     cfg.pwd="12345678"
-     wifi.ap.config(cfg)
-     cfg={}
-     cfg.ip="192.168.4.1";
-     cfg.netmask="255.255.255.0";
-     cfg.gateway="192.168.4.1";
-     wifi.ap.setip(cfg);
                 wifi.sta.connect()
                 print("Connecting to " .. key .. " ...")
                 --config.SSID = nil  -- can save memory
@@ -45,13 +35,9 @@ end
 
 function module.start()  
   print("Configuring Wifi ...")
-  wifi.setmode(wifi.STATIONAP)
-  wifi.sta.getap(wifi_start)
-   tmr.alarm(2, 10000,tmr.ALARM_AUTO, function()
- wifi.setmode(wifi.STATIONAP);
- wifi.sta.getap(wifi_start)
- end)
- tmr.start(2)
+  wifi.setmode(wifi.STATION);   -- Sets nodemcu to station mode
+  wifi.sta.getap(wifi_start)    -- Scans all the access points and returns its list
 end
 
-return module  
+return module 
+
