@@ -40,14 +40,14 @@ local function wifi_start(list_aps)
     if not apDetected then
         uart_rw.start()  
         print("Unable to find the access point")
-        uart_rw.uart_write('$CF$')
+        uart_rw.uart_write('$CF000$')
         --dataToSend = "$" .. "00000" .. "$"
         --dataToSend = "$" .. uart_rw.currentSequenceString .. "$"
         --print("Data to be sent" .. dataToSend)
         --uart_rw.uart_write(dataToSend)
         uart_rw.uart_read() 
     else
-        uart_rw.uart_write('$CT$')        
+        uart_rw.uart_write('$CT000$')        
         if list_aps then
             for key,value in pairs(list_aps) do
                 if config.SSID and config.SSID[key] then

@@ -5,9 +5,8 @@ local module = {}
 
 module.SSID = {}  
 --module.SSID["SEIL"] = "deadlock123" 
---module.SSID["ShriRam"] = "ShriGopal@135$"
+--module.SSID["ShriRam"] = "12345678"
 module.SSID["moto g4+"] = "shaunak123"
-
 
 module.IP = "192.168.43.184"
 module.NETMASK = "255.255.255.0"
