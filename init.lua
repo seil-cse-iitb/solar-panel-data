@@ -1,10 +1,10 @@
 -- test.lua
 
 
-server = require("server_v1")
+server = require("server_v2")
 uart_rw = require("uart_rw")
 config = require("config")
-setup = require("setup_v1")
+setup = require("setup_v2")
 
 setup.start() 
 

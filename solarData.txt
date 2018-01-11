@@ -1,0 +1,2 @@
+this is solar data file.
+it will contain data from different sensors..!!
