@@ -1,2 +1,4 @@
-this is solar data file.
-it will contain data from different sensors..!!
+Test Data 1 from lab
+123
+
+giving delay after each UART reaad/write 

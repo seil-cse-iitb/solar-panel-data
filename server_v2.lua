@@ -9,6 +9,7 @@ local dataFile = ""
 module.dd = ""
 module.hh = ""
 module.mm = ""
+module.timeStamp = ""
 -- Callback function
 -- Line to be added : HTTP/1.1 200 OK
 -- Content-Length: 150
@@ -23,11 +24,11 @@ function receiver(sck, data)
     if ((targetFile ~= "") or (targetFile ~= "delete?") or (targetFile ~= "id?")) then
         uart_rw.start()
         dataFile = string.sub(targetFile, 0,13)
-        timeStamp = string.sub(targetFile, 15, 20)
-        print("Timestamp is ")
-        module.dd = string.sub(timeStamp, 1, 2)
-        module.hh = string.sub(timeStamp, 3, 4)
-        module.mm = string.sub(timeStamp, 5, 6)
+        module.timeStamp = string.sub(targetFile, 15, 20)
+        --print("Timestamp is " .. module.timeStamp)
+        module.dd = string.sub(module.timeStamp, 1, 2)
+        module.hh = string.sub(module.timeStamp, 3, 4)
+        module.mm = string.sub(module.timeStamp, 5, 6)
         --print("Date: " .. module.dd)
         --print("Hour: " .. module.hh)
         --print("Minute: " .. module.mm)
@@ -36,7 +37,7 @@ function receiver(sck, data)
         dataFile = targetFile
     end
 
-    print("Data file is " .. dataFile)
+    --print("Data file is " .. dataFile)
               
 	print(data)
 
@@ -88,15 +89,26 @@ function receiver(sck, data)
             if dataFile == "solarData.txt" then
                 uart_rw.start() 
                 uart_rw.uart_read()
-                uart_rw.uart_write('$D00'.. module.dd .. '$')
-                tmr.delay(1000)
-                uart_rw.uart_write('$H00'.. module.hh .. '$')
-                tmr.delay(1000)
-                uart_rw.uart_write('$M00'.. module.mm .. '$')
-                tmr.delay(1000)
-                uart_rw.uart_write('$CF000$')
+                --tmr.delay(50000)
+                if(uart_rw.rtcTs ~= module.timeStamp) then
+                    uart_rw.start() 
+                    --print("Received Timestamp is " .. tostring(123456))
+                    --print("RTC      Timestamp is " .. uart_rw.rtcTs)
+                    --uart_rw.uart_write('$H00'.. module.hh .. '$' .. '$D00'.. module.dd .. '$' .. '$M00'.. module.mm .. '$')
+                    --tmr.delay(10000)
+                    --uart_rw.uart_write('$D00'.. module.dd .. '$')
+                    --tmr.delay(10000)
+                    --uart_rw.uart_write('$M00'.. module.mm .. '$')
+                    --tmr.delay(10000)
+                end
+                uart_rw.start()
+                --uart_rw.uart_write('$000CF$')
+                uart_rw.uart_write("$T" .. module.dd .. module.hh .. module.mm .. "$")
+                tmr.delay(100000)
+                uart_rw.uart_unregister()
+                --tmr.delay(500000)
             end
-            print("End of the File")
+            --print("End of the File")
             dataAtLine = 0
             
         end
@@ -104,12 +116,23 @@ function receiver(sck, data)
         
 	    if line then
 			localSocket:send(line)
-            print("----Sending " .. line .. " ----")
+            --print("----Sending " .. line .. " ----")
 		else
 	        localSocket:close()
+           
             if dataFile == "solarData.txt" then
-                uart_rw.start()
-                uart_rw.uart_write('$00EOF$')
+                
+                --uart_rw.start()
+                --uart_rw.uart_write('$H0001$')
+                --$D0020$$M0001$')
+                --uart_rw.uart_write('$0H0'.. module.hh .. '$')
+                --tmr.delay(500000)
+                --uart_rw.uart_write('$0D0'.. module.dd .. '$') 
+                --tmr.delay(500000)
+                --uart_rw.uart_write('$0M0'.. module.mm .. '$')
+                --tmr.delay(500000)
+                --uart_rw.uart_write('$00EOF$')
+                --tmr.delay(100000)
             end
 			line = ""
 		end
@@ -129,8 +152,8 @@ function module.start()
     for k, v in pairs(fileData) do 
         if k == "solarData.txt" then
             solarFileSize = v
-            print("name: " .. k .. ", size: " .. solarFileSize)
-            print(type(v))
+            --print("name: " .. k .. ", size: " .. solarFileSize)
+            --print(type(v))
             
         end
     end
