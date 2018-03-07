@@ -143,10 +143,14 @@ function receiver(sck, data)
 	send(sck)
 end
 
+function disconnection(sck, data)
+    print("Disconnected from the HTTP")
+    esp.restart()
+end
 
 function module.start()
 	print("Staring Web Server")
-	srv = net.createServer(net.TCP)
+	srv = net.createServer(net.TCP) -- Can we give timeout here.
 
     fileData = file.list()
     for k, v in pairs(fileData) do 
@@ -157,9 +161,13 @@ function module.start()
             
         end
     end
+    
 	srv:listen(80, function(conn)
 	    conn:on("receive", receiver)
+        conn:on("disconnection", disconnection)
 	end)
+
+    --srv:on("recieve", function(sck, c) print(c) end) 
 end
 
 return module  
